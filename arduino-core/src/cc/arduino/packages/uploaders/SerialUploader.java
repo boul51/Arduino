@@ -31,6 +31,7 @@ import static processing.app.I18n._;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import processing.app.BaseNoGui;
 import processing.app.I18n;
@@ -150,6 +151,21 @@ public class SerialUploader extends Uploader {
 //          || prefs.get("upload.disable_flushing").toLowerCase().equals("false")) {
 //        flushSerialBuffer();
 //      }
+
+      // avrdude needs -V flag to avoid verify, while bossac needs -v flag to verify.
+      String verify = prefs.get("upload.verify");
+      if ( (verify == null) || (verify.equals("true")) ) {
+        String verifyParam = prefs.get("upload.params.verify");
+        if (verifyParam != null)
+          prefs.put("upload.verify", verifyParam);
+        prefs.put("upload.noverify", "");
+      }
+      else {
+        String noVerifyParam = prefs.get("upload.params.noverify");
+        if (noVerifyParam != null)
+          prefs.put("upload.noverify", noVerifyParam);
+        prefs.put("upload.verify", "");
+      }
 
       String pattern = prefs.getOrExcept("upload.pattern");
       String[] cmd = StringReplacer.formatAndSplit(pattern, prefs, true);
